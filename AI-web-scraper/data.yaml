@@ -1,0 +1,14 @@
+credentials:
+  usernames:
+    ahmadnotsobad:
+      email: ahmadnotsobad@aut.ac.ir
+      name: ahmadnotsobad
+      password: $2b$12$hPyaB3f5rQ.yrijcW1eyOODJP.dJKZlMe35hZ8RRYEFr6prBEWOxO
+    amin:
+      email: amin@aut.ac.ir
+      name: amin
+      password: $2b$12$GYMZcKQ.CL0BD06fzdohJewJLNxV05sOrCtupVgexkZ9OPMIowHbC
+    navid:
+      email: navid@aut.ac.ir
+      name: navid
+      password: $2b$12$VTuqrFnX6uQKHyrSNZu8C.UGkRkxduSKvB/76DXvwo5Dfek1IK26e
