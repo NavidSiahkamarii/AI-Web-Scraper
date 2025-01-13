@@ -1,44 +1,42 @@
-import selenium.webdriver as webdriver
-from selenium.webdriver.chrome.service import Service
-from bs4 import BeautifulSoup
-import time
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.document_loaders.firecrawl import FireCrawlLoader
+import asyncio  # Import asyncio to run the async function
+import re
 
-def scrape_website(website):
-    print("lauching chrome browser ...")
 
-    chrome_driver_path = "chromedriver.exe"
-    options = webdriver.ChromeOptions()
-    driver = webdriver.Chrome(service=Service(chrome_driver_path), options=options)
-
-    try:
-        driver.get(website)
-        print("Page loaded ...")
-        html = driver.page_source
-        time.sleep(10)
-
-        return html
-    finally:
-        driver.quit()
-
-def extract_body_content(html_content):
-    soup = BeautifulSoup(html_content, "html.parser")
-    body_content = soup.body
-    if body_content:
-        return str(body_content)
+async def scrape_website_async(page_url, WebpageLoader):
+    # lazy loading is performed according to the recommendation of the langchain
+    # tutorial for greater efficiency
+    if WebpageLoader == "free":
+        loader = WebBaseLoader(
+            web_paths=[page_url],
+            header_template={"User_Agent": "MyWebScraper/1.0"}
+        )
+        docs = []
+        async for doc in loader.alazy_load():
+            docs.append(doc)
+        assert len(docs) == 1
+        return docs[0].page_content
     else:
-        return ""
+        loader = FireCrawlLoader(
+            api_key="fc-6b28cf779ae64356a30be1a4e7726faa", url=page_url, mode="scrape"
+        )
+        docs = []
+        # Since FireCrawlLoader is synchronous, we can use a normal loop here
+        for doc in loader.lazy_load():
+            docs.append(doc)
+        return docs[0].page_content
 
-def clean_body_content(body_content):
-    soup = BeautifulSoup(body_content, "html.parser")
-    for script_or_style in soup(["script", "style"]):
-        script_or_style.extract()
 
-    cleaned_content = soup.get_text(separator='\n')
-    cleaned_content = '\n'.join(line.strip() for line in cleaned_content.splitlines() if line.split())
+def scrape_website(url, WebpageLoader='free'):
+    # Use asyncio.run to handle the event loop for async functions
+    doc = asyncio.run(scrape_website_async(url, WebpageLoader))
 
-    return cleaned_content
+    # Clean the text based on the loader type
+    if WebpageLoader == 'free':
+        cleaned_text = re.sub(r'\s+', ' ', doc.strip())
+    else:
+        cleaned_text = doc.strip()
 
-def split_dom_content(dom_content, max_length= 8000):
-    return [
-        dom_content[i : i + max_length] for i in range(0, len(dom_content), max_length)
-    ]
+    return cleaned_text
+
