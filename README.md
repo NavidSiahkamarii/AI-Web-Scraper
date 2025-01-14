@@ -8,6 +8,8 @@ AI Web Scraper is a Python-based web scraping tool that leverages AI for intelli
 - Supports multiple websites and dynamic content.
 - Easy-to-use interface with customizable options.
 - Output in various formats (CSV, JSON, etc.).
+- Use predefined searches via your account
+- Ability to view search histories
 
 ## Installation
 
@@ -23,5 +25,5 @@ To get started with AI Web Scraper, follow these steps:
 3.Install the required dependencies:
   pip install -r requirements.txt
 
-4.To run the web scraper, use the following command
+4.To run the web scraper, use the following command:
   streamlit rum main.py
